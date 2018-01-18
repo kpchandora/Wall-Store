@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<platform name="android">
+
+    <resource-file src="locales/android/drawable-mdpi/message_icon.png" target="res/drawable-mdpi/message_icon.png" />
+    <resource-file src="locales/android/drawable-hdpi/message_icon.png" target="res/drawable-hdpi/message_icon.png" />
+    <resource-file src="locales/android/drawable-xhdpi/message_icon.png" target="res/drawable-xhdpi/message_icon.png" />
+    <resource-file src="locales/android/drawable-xxhdpi/message_icon.png" target="res/drawable-xxhdpi/message_icon.png" />
+    <resource-file src="locales/android/drawable-xxxhdpi/message_icon.png" target="res/drawable-xxxhdpi/message_icon.png" />
+
+    <!-- Uncomment if you have added a large icon. -->
+</platform>
