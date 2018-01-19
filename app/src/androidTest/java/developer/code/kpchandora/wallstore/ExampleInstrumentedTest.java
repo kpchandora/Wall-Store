@@ -1,4 +1,4 @@
-package com.example.kpchandora.wallpaperapp;
+package developer.code.kpchandora.wallstore;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:793008997226:android:42dd0b9cbd362fff",
+        "mobilesdk_app_id": "1:793008997226:android:7c10ba6bb46ccc86",
         "android_client_info": {
-          "package_name": "com.example.kpchandora.wallpaperapp"
+          "package_name": "developer.code.kpchandora.wallstore"
         }
       },
       "oauth_client": [
         {
-          "client_id": "793008997226-t2kpm684pstdvf4j7f8rrlto395r3pc0.apps.googleusercontent.com",
+          "client_id": "793008997226-5gn8k5856c57jsfgbgmr8n2209gqgqj2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.kpchandora.wallpaperapp",
+            "package_name": "developer.code.kpchandora.wallstore",
             "certificate_hash": "6bccf5db5b3fc074da8c559a7c79d9c3b16cd4ec"
           }
         },

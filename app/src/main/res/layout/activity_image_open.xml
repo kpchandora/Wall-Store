@@ -12,7 +12,7 @@
         android:background="@android:color/black"
         android:orientation="vertical"
         android:weightSum="1"
-        tools:context="com.example.kpchandora.wallpaperapp.ImageOpenActivity">
+        tools:context="developer.code.kpchandora.wallstore.ImageOpenActivity">
 
 
         <ImageView
@@ -25,7 +25,6 @@
             android:layout_marginStart="3dp"
             android:layout_marginTop="3dp"
             android:layout_weight=".99" />
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,6 +60,7 @@
         </LinearLayout>
 
     </LinearLayout>
+
 
     <ProgressBar
         android:id="@+id/open_activity_progressBar"

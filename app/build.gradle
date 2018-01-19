@@ -8,7 +8,7 @@ apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "com.example.kpchandora.wallpaperapp"
+        applicationId "developer.code.kpchandora.wallstore"
         minSdkVersion 15
         targetSdkVersion 26
         versionCode 1

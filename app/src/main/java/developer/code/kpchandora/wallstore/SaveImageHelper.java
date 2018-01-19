@@ -1,16 +1,11 @@
-package com.example.kpchandora.wallpaperapp;
+package developer.code.kpchandora.wallstore;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
-import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;

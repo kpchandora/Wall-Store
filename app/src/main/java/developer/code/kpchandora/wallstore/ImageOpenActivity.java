@@ -1,4 +1,4 @@
-package com.example.kpchandora.wallpaperapp;
+package developer.code.kpchandora.wallstore;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -15,23 +15,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.UUID;
 
+import co.gofynd.gravityview.GravityView;
 import dmax.dialog.SpotsDialog;
 
 public class ImageOpenActivity extends AppCompatActivity {
@@ -46,7 +43,6 @@ public class ImageOpenActivity extends AppCompatActivity {
 
     private ImageView imageView;
     private ProgressBar progressBar;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +76,7 @@ public class ImageOpenActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                     }
                 });
+
 
 //        Glide.with(this)
 //                .load(url)
@@ -142,12 +139,12 @@ public class ImageOpenActivity extends AppCompatActivity {
                             @Override
                             public void run() {
 
-                                wallpaperManager = WallpaperManager.getInstance(ImageOpenActivity.this);
+                                wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
                                 bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
                                 bitmap1 = bitmapDrawable.getBitmap();
                                 GetScreenWidthHeight();
                                 bitmap2 = Bitmap.createScaledBitmap(bitmap1, width, height, false);
-                                wallpaperManager = WallpaperManager.getInstance(ImageOpenActivity.this);
+                                wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
                                 try {
                                     wallpaperManager.setBitmap(bitmap2);
                                     wallpaperManager.suggestDesiredDimensions(width, height);

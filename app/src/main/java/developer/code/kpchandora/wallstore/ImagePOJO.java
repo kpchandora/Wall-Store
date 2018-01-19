@@ -1,4 +1,4 @@
-package com.example.kpchandora.wallpaperapp;
+package developer.code.kpchandora.wallstore;
 
 /**
  * Created by kpchandora on 15/1/18.
