@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -19,7 +20,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -72,28 +75,55 @@ public class MainActivity extends AppCompatActivity {
 
             String pixaBayApi = "https://pixabay.com/api/?key=6318588-51c982aa8d01fb8ba1030b311&q=" + title[k] + "&order=popular&response_group=high_resolution&per_page=" + count + "&image_type=photo&editors_choice=true&safesearch=true";
 
+            final String url = "https://api.pexels.com/v1/search?query=" + title[k] + "&per_page=40&page=1";
+
             JsonObjectRequest jsonRequest = new JsonObjectRequest(
-                    Request.Method.GET, pixaBayApi, null, new Response.Listener<JSONObject>() {
+                    Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
 
-                    try {
-                        JSONArray urlArray = response.getJSONArray("hits");
+//                    try {
+//                        JSONArray urlArray = response.getJSONArray("hits");
+//
+//                        for (int i = 0; i < urlArray.length(); i++) {
+//                            JSONObject currentUrl = urlArray.getJSONObject(i);
+//                            String imageUrl = currentUrl.getString("fullHDURL");
+//                            ImagePOJO pojo = new ImagePOJO(imageUrl);
+//                            pojoList.add(pojo);
+//                            Log.i(TAG, "URL: " + imageUrl);
+//                        }
+//                        if (flag == title.length - 1) {
+//                            imageAdapter = new ImageAdapter(MainActivity.this, pojoList);
+//                            recyclerView.setAdapter(imageAdapter);
+//                            progressBar.setVisibility(View.GONE);
+//                        }
+//                        flag++;
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+                    try{
 
-                        for (int i = 0; i < urlArray.length(); i++) {
-                            JSONObject currentUrl = urlArray.getJSONObject(i);
-                            String imageUrl = currentUrl.getString("fullHDURL");
+                        Log.i("Resp", "onResponse: "+response);
+                        JSONArray array = response.getJSONArray("photos");
+
+                        for(int i = 0; i < array.length(); i++){
+
+                            JSONObject src = array.getJSONObject(i);
+                            JSONObject currentObj = src.getJSONObject("src");
+                            String imageUrl = currentObj.getString("large2x");
+                            Log.i("URL", ""+imageUrl);
                             ImagePOJO pojo = new ImagePOJO(imageUrl);
                             pojoList.add(pojo);
-                            Log.i(TAG, "URL: " + imageUrl);
                         }
                         if (flag == title.length - 1) {
                             imageAdapter = new ImageAdapter(MainActivity.this, pojoList);
                             recyclerView.setAdapter(imageAdapter);
                             progressBar.setVisibility(View.GONE);
                         }
+                        Log.i(TAG, "Flag"+flag);
                         flag++;
-                    } catch (Exception e) {
+
+                    }catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -103,9 +133,17 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.i(TAG, "onErrorResponse: ");
+                            flag++;
                         }
                     }
-            );
+            ) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("Authorization", getResources().getString(R.string.api_key));
+                    return params;
+                }
+            };
 
             requestQueue.add(jsonRequest);
 
