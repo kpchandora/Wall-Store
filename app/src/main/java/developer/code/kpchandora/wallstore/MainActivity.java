@@ -1,10 +1,15 @@
 package developer.code.kpchandora.wallstore;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -44,10 +49,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         pojoList = new ArrayList<>();
         recyclerView = findViewById(R.id.image_recyclerView);
         progressBar = findViewById(R.id.main_activity_progressBar);
         requestQueue = Volley.newRequestQueue(MainActivity.this);
+
 
         Bundle bundle = getIntent().getExtras();
 
@@ -66,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
     }
+
 
     private void addWallpapers(final String[] title) {
 
@@ -101,17 +109,17 @@ public class MainActivity extends AppCompatActivity {
 //                    } catch (Exception e) {
 //                        e.printStackTrace();
 //                    }
-                    try{
+                    try {
 
-                        Log.i("Resp", "onResponse: "+response);
+                        Log.i("Resp", "onResponse: " + response);
                         JSONArray array = response.getJSONArray("photos");
 
-                        for(int i = 0; i < array.length(); i++){
+                        for (int i = 0; i < array.length(); i++) {
 
                             JSONObject src = array.getJSONObject(i);
                             JSONObject currentObj = src.getJSONObject("src");
                             String imageUrl = currentObj.getString("large2x");
-                            Log.i("URL", ""+imageUrl);
+                            Log.i("URL", "" + imageUrl);
                             ImagePOJO pojo = new ImagePOJO(imageUrl);
                             pojoList.add(pojo);
                         }
@@ -120,10 +128,10 @@ public class MainActivity extends AppCompatActivity {
                             recyclerView.setAdapter(imageAdapter);
                             progressBar.setVisibility(View.GONE);
                         }
-                        Log.i(TAG, "Flag"+flag);
+                        Log.i(TAG, "Flag" + flag);
                         flag++;
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 

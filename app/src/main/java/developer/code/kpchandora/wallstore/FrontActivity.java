@@ -1,16 +1,26 @@
 package developer.code.kpchandora.wallstore;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -29,15 +39,21 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FrontActivity extends AppCompatActivity {
+public class FrontActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private MyImageAdapter adapter;
     private List<ImagePOJO> imagePOJOList;
 
+    private NotificationManager manager;
+    private NotificationCompat.Builder builder;
+
+    public static final String CHANNEL_ID = "notification_channel";
+
     private RequestQueue newRqst;
     private static final int PERMISSION_REQUEST_CODE = 3;
+    protected DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +63,9 @@ public class FrontActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.front_activity_progressBar);
         imagePOJOList = new ArrayList<>();
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         OneSignal.startInit(this)
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(true)
@@ -54,15 +73,52 @@ public class FrontActivity extends AppCompatActivity {
 
         getCDataFromApi();
 
-        if (!checkPermission()){
+        if (!checkPermission()) {
             askPermission();
         }
+
+
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+
+        ActionBarDrawerToggle toggle =
+                new ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0);
+
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(FrontActivity.this, 2));
     }
 
-    private boolean checkPermission(){
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    private void initNotification() {
+
+        builder = new NotificationCompat.Builder(FrontActivity.this, CHANNEL_ID);
+        manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        NotificationChannel channel;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            channel = new NotificationChannel(CHANNEL_ID, "channel_name", NotificationManager.IMPORTANCE_DEFAULT);
+            manager.createNotificationChannel(channel);
+        }
+
+    }
+
+    private boolean checkPermission() {
 
         return ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED;
@@ -128,7 +184,7 @@ public class FrontActivity extends AppCompatActivity {
                             imagePOJOList.add(new ImagePOJO(url, title, categoryItems, noOfImages));
                         }
                     }
-                    Log.i("NUMCount", "Count: "+num);
+                    Log.i("NUMCount", "Count: " + num);
                     adapter = new MyImageAdapter(FrontActivity.this, imagePOJOList);
                     recyclerView.setAdapter(adapter);
                     progressBar.setVisibility(View.GONE);
@@ -150,4 +206,8 @@ public class FrontActivity extends AppCompatActivity {
         newRqst.add(request);
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return true;
+    }
 }

@@ -2,6 +2,10 @@ package developer.code.kpchandora.wallstore;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,8 +15,10 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,6 +34,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.UUID;
 
 import dmax.dialog.SpotsDialog;
@@ -42,19 +49,28 @@ public class ImageOpenActivity extends AppCompatActivity {
 
     private String new_url = "";
 
+    private int notificationId;
+    private Context context;
+    private NotificationCompat.Builder builder;
+    private NotificationManager manager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_open);
 
+        notificationId = new Random().nextInt(50);
+
         String title = "";
+
+        context = ImageOpenActivity.this;
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             url = bundle.getString("URL");
             title = bundle.getString("Title");
             if (url.contains("dpr=2")) {
-                url = url.replace("dpr=2", "dpr=3");
+//                url = url.replace("dpr=2", "dpr=3");
             }
             if (url.contains("&auto=compress")) {
                 url = url.replace("&auto=compress", "&fit=crop");
@@ -117,26 +133,84 @@ public class ImageOpenActivity extends AppCompatActivity {
             permissionDialog();
 
         } else {
-            new DownloadImage(ImageOpenActivity.this).execute();
+            new DownloadImage().execute();
+        }
+
+    }
+
+    private void sendNotification(String uri, Bitmap bitmap, int flag) {
+
+        String CHANNEL_ID = "notification_channel";
+
+        builder = new NotificationCompat.Builder(ImageOpenActivity.this, CHANNEL_ID)
+                .setSound(null);
+
+
+         manager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.parse(uri), "image/*");
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                ImageOpenActivity.this,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+
+        );
+
+        if (flag == 0) {
+            manager.cancel(notificationId);
+            return;
+        }
+
+        if (uri.equals("")) {
+
+            builder.setSmallIcon(R.drawable.downloading)
+                    .setContentTitle("Downloading...")
+                    .setProgress(0, 0, true);
+
+        } else {
+
+            builder.setSmallIcon(R.drawable.downloaded)
+                    .setLargeIcon(bitmap)
+                    .setContentTitle("Download Successful")
+                    .setContentText("Tap to open")
+                    .setProgress(0, 0, false);
+            builder.setStyle(new NotificationCompat.BigPictureStyle()
+                    .bigPicture(bitmap));
+            builder.setContentIntent(pendingIntent);
+        }
+
+
+        NotificationChannel channel;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            channel = new NotificationChannel(CHANNEL_ID, "channel_name", NotificationManager.IMPORTANCE_DEFAULT);
+            manager.createNotificationChannel(channel);
+        }
+
+        if (manager != null) {
+            builder.setAutoCancel(true);
+            manager.notify(notificationId, builder.build());
         }
 
     }
 
 
-    private static class DownloadImage extends AsyncTask<Void, Void, Bitmap> {
+
+    private class DownloadImage extends AsyncTask<Void, Void, Bitmap> {
         String fileName = UUID.randomUUID().toString() + ".jpg";
         AlertDialog alertDialog;
-        Context context;
+        ImageOpenActivity activity;
 
-        DownloadImage(Context context) {
-            this.context = context;
-            alertDialog = new SpotsDialog(context);
-        }
 
         @Override
         protected void onPreExecute() {
-            alertDialog.show();
-            alertDialog.setMessage("Downloading...");
+//            alertDialog.show();
+//            alertDialog.setMessage("Downloading...");
+            sendNotification("", null, 1);
         }
 
         @Override
@@ -144,7 +218,7 @@ public class ImageOpenActivity extends AppCompatActivity {
             Bitmap bitmap = null;
 
             try {
-                bitmap = Glide.with(context)
+                bitmap = Glide.with(ImageOpenActivity.this)
                         .load(url)
                         .asBitmap()
                         .into(-1, -1)
@@ -160,11 +234,13 @@ public class ImageOpenActivity extends AppCompatActivity {
         protected void onPostExecute(Bitmap bitmap) {
 
             if (bitmap != null) {
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "");
-                alertDialog.dismiss();
+                String uri = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, fileName, "");
+//                alertDialog.dismiss();
+                sendNotification(uri, bitmap, 1);
                 Toast.makeText(context, "Downloaded Successfully", Toast.LENGTH_LONG).show();
             } else {
-                alertDialog.dismiss();
+//                alertDialog.dismiss();
+                sendNotification("", null, 0);
                 Toast.makeText(context, "Downloading Failed", Toast.LENGTH_LONG).show();
             }
         }

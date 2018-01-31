@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="developer.code.kpchandora.wallstore.MainActivity"/>
+        <activity android:name="developer.code.kpchandora.wallstore.MainActivity"
+            android:theme="@style/CustomStyle"/>
         <activity android:name="developer.code.kpchandora.wallstore.FrontActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="developer.code.kpchandora.wallstore.ImageOpenActivity"/>
+        <activity android:name="developer.code.kpchandora.wallstore.ImageOpenActivity"
+            android:theme="@style/CustomStyle"/>
     </application>
 
 </manifest>
