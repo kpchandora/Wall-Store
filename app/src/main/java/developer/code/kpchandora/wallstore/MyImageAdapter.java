@@ -2,6 +2,7 @@ package developer.code.kpchandora.wallstore;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +22,10 @@ import java.util.List;
 
 public class MyImageAdapter extends RecyclerView.Adapter<MyImageAdapter.MyViewHolder> {
 
-    private List<ImagePOJO> imagePOJOList;
+    private List<CategoryModel> imagePOJOList;
     private Context context;
 
-    public MyImageAdapter(Context context, List<ImagePOJO> imagePOJOList) {
+    public MyImageAdapter(Context context, List<CategoryModel> imagePOJOList) {
 
         this.context = context;
         this.imagePOJOList = imagePOJOList;
@@ -42,9 +43,9 @@ public class MyImageAdapter extends RecyclerView.Adapter<MyImageAdapter.MyViewHo
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
 
-        ImagePOJO pojo = imagePOJOList.get(position);
-        String url = pojo.getNewImageUrl();
-        String title = pojo.getTitle();
+        CategoryModel pojo = imagePOJOList.get(position);
+        String url = pojo.getImageUrl();
+        String title = pojo.getImageTitle();
         holder.titleTextView.setText(title);
 
         Picasso.with(context)
@@ -73,11 +74,11 @@ public class MyImageAdapter extends RecyclerView.Adapter<MyImageAdapter.MyViewHo
 
         ImageView imageView;
         Context ctx;
-        List<ImagePOJO> pojos;
+        List<CategoryModel> pojos;
         TextView titleTextView;
         ProgressBar progressBar;
 
-        public MyViewHolder(View itemView, List<ImagePOJO> pojos, Context context) {
+        public MyViewHolder(View itemView, List<CategoryModel> pojos, Context context) {
             super(itemView);
             this.ctx = context;
             this.pojos = pojos;
@@ -92,14 +93,12 @@ public class MyImageAdapter extends RecyclerView.Adapter<MyImageAdapter.MyViewHo
 
             int position = getAdapterPosition();
 
-            ImagePOJO pojo = this.pojos.get(position);
-            String name = pojo.getTitle();
-            String[] categoryArray = pojo.getCategoryArray();
+            CategoryModel pojo = this.pojos.get(position);
+            String name = pojo.getImageTitle();
 
             Intent i = new Intent(ctx, MainActivity.class);
-            i.putExtra("Category", categoryArray);
             i.putExtra("Title", name);
-            i.putExtra("NoOfImages", pojo.getCountOfImages());
+            Bundle b = new Bundle();
             ctx.startActivity(i);
 
         }

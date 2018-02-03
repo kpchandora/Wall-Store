@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="3dp"
+    android:layout_marginLeft="3dp"
+    android:layout_marginRight="3dp"
+    android:layout_marginEnd="3dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp">
+
+    <Button
+        android:id="@+id/category_button_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:text="Hello"
+        android:layout_margin="2dp"
+        android:background="@drawable/category_button_bg"/>
+
+</android.support.constraint.ConstraintLayout>

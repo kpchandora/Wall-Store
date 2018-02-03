@@ -61,29 +61,31 @@ public class MainActivity extends AppCompatActivity {
         String[] categoryArray = null;
 
         if (bundle != null) {
-            categoryArray = bundle.getStringArray("Category");
             toolBarTitle = bundle.getString("Title");
             count = bundle.getInt("NoOfImages");
         }
 
         setTitle(toolBarTitle);
 
-        addWallpapers(categoryArray);
+        addWallpapers(toolBarTitle);
+
+        GridLayoutManager manager = new GridLayoutManager(MainActivity.this, 2);
+        manager.setSmoothScrollbarEnabled(true);
 
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
+        recyclerView.setLayoutManager(manager);
     }
 
 
-    private void addWallpapers(final String[] title) {
+    private void addWallpapers(final String title) {
 
         flag = 0;
 
-        for (int k = 0; k < title.length; k++) {
+        for (int k = 0; k < 1; k++) {
 
-            String pixaBayApi = "https://pixabay.com/api/?key=6318588-51c982aa8d01fb8ba1030b311&q=" + title[k] + "&order=popular&response_group=high_resolution&per_page=" + count + "&image_type=photo&editors_choice=true&safesearch=true";
+            String pixaBayApi = "https://pixabay.com/api/?key=6318588-51c982aa8d01fb8ba1030b311&q=" + title + "&order=popular&response_group=high_resolution&per_page=" + count + "&image_type=photo&editors_choice=true&safesearch=true";
 
-            final String url = "https://api.pexels.com/v1/search?query=" + title[k] + "&per_page=40&page=1";
+            final String url = "https://api.pexels.com/v1/search?query=" + title + "&per_page=40&page=1";
 
             JsonObjectRequest jsonRequest = new JsonObjectRequest(
                     Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -123,11 +125,11 @@ public class MainActivity extends AppCompatActivity {
                             ImagePOJO pojo = new ImagePOJO(imageUrl);
                             pojoList.add(pojo);
                         }
-                        if (flag == title.length - 1) {
-                            imageAdapter = new ImageAdapter(MainActivity.this, pojoList);
-                            recyclerView.setAdapter(imageAdapter);
-                            progressBar.setVisibility(View.GONE);
-                        }
+
+                        imageAdapter = new ImageAdapter(MainActivity.this, pojoList);
+                        recyclerView.setAdapter(imageAdapter);
+                        progressBar.setVisibility(View.GONE);
+
                         Log.i(TAG, "Flag" + flag);
                         flag++;
 

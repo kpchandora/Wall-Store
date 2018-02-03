@@ -7,6 +7,8 @@
     android:orientation="vertical"
     tools:context="developer.code.kpchandora.wallstore.FrontActivity">
 
+
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,6 +48,20 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:indeterminateTint="@android:color/black" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:clickable="true"
+            app:fabSize="normal"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="20dp"
+            android:src="@drawable/add_button"
+            app:backgroundTint="#03A9F4"
+             />
 
     </RelativeLayout>
 
