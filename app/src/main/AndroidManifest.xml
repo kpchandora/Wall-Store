@@ -35,12 +35,14 @@
             android:name=".CategoriesActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomStyle" />
-        <activity android:name=".DownloadActivity"
+        <activity
+            android:name=".DownloadActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/CustomStyle"/>
-        <activity android:name=".NotificationActivity"
+            android:theme="@style/CustomStyle" />
+        <activity
+            android:name=".NotificationActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/CustomStyle"></activity>
+            android:theme="@style/CustomStyle" />
 
         <service
             android:name=".NotificationService"
@@ -50,6 +52,7 @@
                 <action android:name="com.onesignal.NotificationExtender" />
             </intent-filter>
         </service>
+
     </application>
 
 </manifest>

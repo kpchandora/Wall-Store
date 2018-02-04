@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 
@@ -17,7 +18,7 @@ import developer.code.kpchandora.wallstore.Database.DbHelper;
 import static developer.code.kpchandora.wallstore.Database.CategoryContract.*;
 
 
-public class NotificationActivity extends AppCompatActivity {
+public class NotificationActivity extends RootAnimActivity {
 
     private static final String TAG = "NotificationActivity";
 
@@ -37,7 +38,6 @@ public class NotificationActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
 
-//        deleteAfterCertainTime();
 
         new FetchNotification().execute();
 
@@ -48,6 +48,7 @@ public class NotificationActivity extends AppCompatActivity {
 
         @Override
         protected ArrayList<NotificationModel> doInBackground(Void... voids) {
+            deleteAfterCertainTime();
             return fetchData();
         }
 

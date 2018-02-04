@@ -2,7 +2,6 @@ package developer.code.kpchandora.wallstore;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,7 +21,6 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -49,7 +47,7 @@ public class ImageOpenActivity extends RootAnimActivity {
 
     private static String url = "";
     private String imageUri = "";
-    private int tag = 5;
+    private int tag = 0;
     private int width, height;
 
     private ImageView imageView;
@@ -62,6 +60,7 @@ public class ImageOpenActivity extends RootAnimActivity {
     private NotificationCompat.Builder builder;
     private NotificationManager manager;
 
+    private Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,17 +73,19 @@ public class ImageOpenActivity extends RootAnimActivity {
 
         context = ImageOpenActivity.this;
 
-        Bundle bundle = getIntent().getExtras();
+        bundle = getIntent().getExtras();
         if (bundle != null) {
 
-            url = bundle.getString("URL");
-            title = bundle.getString("Title");
-            if (url.contains("dpr=2")) {
-//                url = url.replace("dpr=2", "dpr=3");
+            tag = bundle.getInt("TAG");
+
+            if (tag == 0) {
+                title = bundle.getString("Title");
+                url = bundle.getString("URL");
+            } else {
+                url = bundle.getString("NotiUrl");
+                title = "Downloads";
             }
-            if (url.contains("&auto=compress")) {
-                url = url.replace("&auto=compress", "&fit=crop");
-            }
+
 
 //            String regex = "w=\\d\\d\\d\\d?&h=\\d\\d\\d\\d?";
 //            new_url = url.replaceAll(regex, "w=1200&h=1200");
@@ -142,14 +143,69 @@ public class ImageOpenActivity extends RootAnimActivity {
             permissionDialog();
 
         } else {
-            new DownloadImage().execute();
+            if (tag == 0) {
+                showCategoryDialog(0);
+            } else {
+                new DownloadImage().execute();
+            }
         }
 
     }
 
-    private void showDialog(){
+    private void showCategoryDialog(final int flag) {
+
+        if (tag == 0) {
+            url = bundle.getString("URL");
+        }
+
+        String[] options = {
+                "Normal",
+                "HD",
+                "Full HD"
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(ImageOpenActivity.this);
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i) {
+                    case 0:
+                        if (url.contains("dpr=2")) {
+                            url = url.replace("dpr=2", "dpr=3");
+                            Log.i(TAG, "onClick: case 0");
+                        }
+                        break;
+                    case 1:
+                        if (url.contains("dpr=2")) {
+                            url = url.replace("dpr=2", "dpr=3");
+                            Log.i(TAG, "onClick: case 1 dpr");
+                        }
+                        if (url.contains("&auto=compress")) {
+                            url = url.replace("&auto=compress", "&fit=crop");
+                            Log.i(TAG, "onClick: case 1 auto compress");
+                        }
+                        break;
+                    case 2:
+                        if (url.contains("dpr=2")) {
+                            url = url.replace("dpr=2", "dpr=5");
+                            Log.i(TAG, "onClick: case 2 dpr");
+                        }
+                        if (url.contains("&auto=compress")) {
+                            url = url.replace("&auto=compress", "&fit=crop");
+                            Log.i(TAG, "onClick: case 2 auto compressa");
+                        }
+                        break;
+                }
+
+                if (flag == 0) {
+                    new DownloadImage().execute();
+                } else {
+                    new SetWallpaper(ImageOpenActivity.this).execute();
+                }
 
 
+            }
+        }).show();
 
     }
 
@@ -276,7 +332,14 @@ public class ImageOpenActivity extends RootAnimActivity {
     }
 
     public void setWallpaper(View view) {
-        new SetWallpaper(ImageOpenActivity.this).execute();
+
+        if (tag == 0) {
+            showCategoryDialog(1);
+        } else {
+            new SetWallpaper(ImageOpenActivity.this).execute();
+        }
+
+
     }
 
     private class SetWallpaper extends AsyncTask<Void, Void, Bitmap> {

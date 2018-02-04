@@ -25,13 +25,15 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
 
     private ArrayList<CategoryModel> categoryModels;
     private Context context;
-    private int tempFlag;
+    private int[] tempFlag;
+
 
     private static final String TAG = "CategoryAdapter";
 
     public CategoriesAdapter(Context context, ArrayList<CategoryModel> categoryModels) {
         this.context = context;
         this.categoryModels = categoryModels;
+        tempFlag = new int[categoryModels.size()];
     }
 
     @Override
@@ -43,7 +45,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
     }
 
     @Override
-    public void onBindViewHolder(MyHolder holder, int position) {
+    public void onBindViewHolder(MyHolder holder, final int position) {
 
         CategoryModel model = categoryModels.get(position);
         final String title = model.getImageTitle();
@@ -54,7 +56,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
         final Button button = holder.categoryButton;
 
         button.setText(title);
-
+        tempFlag[position] = flag;
         if (flag == 1) {
             button.setBackgroundResource(R.drawable.category_button_click_bg);
             button.setTextColor(Color.BLACK);
@@ -64,15 +66,33 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (flag != 1) {
+                if (tempFlag[position] != 1) {
                     button.setBackgroundResource(R.drawable.category_button_click_bg);
                     button.setTextColor(Color.BLACK);
                     insertDataIntoFrontTable(title, url);
+                    tempFlag[position] = 1;
+                    Log.i(TAG, "onClick: 0");
+                } else {
+                    button.setBackgroundResource(R.drawable.category_button_bg);
+                    button.setTextColor(Color.WHITE);
+                    deleteDataFromFrontTable(title);
+                    tempFlag[position] = 0;
+                    Log.i(TAG, "onClick: 1");
                 }
-
             }
         });
 
+
+    }
+
+    private void deleteDataFromFrontTable(String title) {
+
+        DbHelper dbHelper = new DbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        String selection = CategoryContract.FRONT_ID + " =? ";
+        long numRow = db.delete(CategoryContract.FRONT_TABLE, selection, new String[]{title});
+        Log.i(TAG, "deleteDataFromFrontTable: " + numRow);
 
     }
 

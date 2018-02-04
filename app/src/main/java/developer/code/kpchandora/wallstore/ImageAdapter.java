@@ -109,6 +109,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyImageHolde
             String url = pojo.getImageUrl();
             Intent intent = new Intent(context, ImageOpenActivity.class);
             intent.putExtra("URL", url);
+            intent.putExtra("TAG", 0);
             intent.putExtra("Title", MainActivity.toolBarTitle);
             ctx.startActivity(intent);
         }

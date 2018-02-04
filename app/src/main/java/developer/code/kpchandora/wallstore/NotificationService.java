@@ -31,7 +31,7 @@ public class NotificationService extends NotificationExtenderService {
                 Log.i("TAG", "extend: " + builder.mContentTitle);
 
                 long currentTime = System.currentTimeMillis();
-                long expTime = 5 * 60000;
+                long expTime = 5 * 24 * 60 * 60000;
 
                 String url = notification.payload.bigPicture;
 

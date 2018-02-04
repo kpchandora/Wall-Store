@@ -58,9 +58,6 @@ public class FrontActivity extends RootAnimActivity implements NavigationView.On
     private RelativeLayout relativeLayout;
     private DrawerLayout drawerLayout;
 
-    private NotificationManager manager;
-    private NotificationCompat.Builder builder;
-
 
     //    private RequestQueue newRqst;
     private ArrayList<String> titlesList;
@@ -75,6 +72,7 @@ public class FrontActivity extends RootAnimActivity implements NavigationView.On
         progressBar = findViewById(R.id.front_activity_progressBar);
         fab = findViewById(R.id.floatingActionButton);
         titlesList = new ArrayList<>();
+
 
         //Checks if the user has opened the app for first time
         checkIfFirstTime();
@@ -152,6 +150,12 @@ public class FrontActivity extends RootAnimActivity implements NavigationView.On
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -217,10 +221,17 @@ public class FrontActivity extends RootAnimActivity implements NavigationView.On
         super.onStart();
         new FrontDataClass().execute();
         Log.i(TAG, "onStart: ");
-
+        if (titlesList.size() < 1) {
+            relativeLayout.setVisibility(View.VISIBLE);
+        }
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume: ");
+    }
 
     private class FrontDataClass extends AsyncTask<Void, Void, ArrayList<CategoryModel>> {
 
@@ -249,6 +260,8 @@ public class FrontActivity extends RootAnimActivity implements NavigationView.On
 
             if (categoryModels != null && categoryModels.size() > 0) {
                 relativeLayout.setVisibility(View.GONE);
+            } else {
+                relativeLayout.setVisibility(View.VISIBLE);
             }
 
             adapter = new FrontAdapter(FrontActivity.this, categoryModels);

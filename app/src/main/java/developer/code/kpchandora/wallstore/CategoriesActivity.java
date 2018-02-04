@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,7 +32,15 @@ import java.util.ArrayList;
 import developer.code.kpchandora.wallstore.Database.CategoryContract;
 import developer.code.kpchandora.wallstore.Database.DbHelper;
 
-public class CategoriesActivity extends AppCompatActivity {
+import static developer.code.kpchandora.wallstore.Database.CategoryContract.IMAGE_URL_COLUMN;
+import static developer.code.kpchandora.wallstore.Database.CategoryContract.NOTIFICATION_CONTENT_COLUMN;
+import static developer.code.kpchandora.wallstore.Database.CategoryContract.NOTIFICATION_EXP_TIME;
+import static developer.code.kpchandora.wallstore.Database.CategoryContract.NOTIFICATION_TIME_STAMP;
+import static developer.code.kpchandora.wallstore.Database.CategoryContract.NOTIFICATION_TITLE_COLUMN;
+import static developer.code.kpchandora.wallstore.Database.CategoryContract.NOTIFICATION_TOTAL_TIME;
+import static developer.code.kpchandora.wallstore.Database.CategoryContract.TABLE_NOTIFICATION;
+
+public class CategoriesActivity extends RootAnimActivity {
 
     private static final String TAG = "CategoryActivity";
 
@@ -71,32 +80,21 @@ public class CategoriesActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(CategoriesActivity.this);
 
         getDataFromApi();
+
+
     }
 
-    private void deleteTable(){
+    private void deleteTable() {
         DbHelper helper = new DbHelper(CategoriesActivity.this);
         SQLiteDatabase db = helper.getWritableDatabase();
 
-        String DELETE_TABLE = "DELETE FROM "+CategoryContract.CATEGORY_TABLE+" WHERE "+
-                CategoryContract.CATEGORY_ID+" != \"-1\";";
+        String DELETE_TABLE = "DELETE FROM " + CategoryContract.CATEGORY_TABLE + " WHERE " +
+                CategoryContract.CATEGORY_ID + " != \"-1\";";
         db.execSQL(DELETE_TABLE);
         Log.i(TAG, "deleteTable: ");
 
     }
 
-    private class CategoryFetchData extends AsyncTask<Void, Void, ArrayList<CategoryModel>> {
-
-
-        @Override
-        protected ArrayList<CategoryModel> doInBackground(Void... voids) {
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<CategoryModel> categoryModels) {
-
-        }
-    }
 
     private ArrayList<CategoryModel> fetchCategories() {
 
@@ -151,14 +149,14 @@ public class CategoriesActivity extends AppCompatActivity {
 
                             for (int i = 0; i < array.length(); i++) {
 
-                                if(!array.getString(i).equals("null")){
+                                if (!array.getString(i).equals("null")) {
                                     JSONObject currentObj = array.getJSONObject(i);
                                     String title = currentObj.getString("title");
                                     String url = currentObj.getString("url");
 
                                     insertData(title, url);
-                                }else {
-                                    Log.i(TAG, "onResponse: "+array.getString(i)+" at pos "+i);
+                                } else {
+                                    Log.i(TAG, "onResponse: " + array.getString(i) + " at pos " + i);
                                 }
 
 
@@ -184,6 +182,12 @@ public class CategoriesActivity extends AppCompatActivity {
 
         requestQueue.add(request);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        Toast.makeText(this, "Long press to delete a category", Toast.LENGTH_LONG).show();
+        super.onDestroy();
     }
 
     private void updateFlagOfTitles(ArrayList<String> titlesList) {
@@ -216,5 +220,25 @@ public class CategoriesActivity extends AppCompatActivity {
 
         Log.i("Category", "insertData: " + rowId);
     }
+
+//    private void put(){
+//
+//
+//        long currentTime = System.currentTimeMillis();
+//        long expTime = 2 * 60000;
+//
+//
+//        DbHelper helper = new DbHelper(this);
+//        SQLiteDatabase db = helper.getWritableDatabase();
+//        ContentValues values = new ContentValues();
+//        values.put(NOTIFICATION_TITLE_COLUMN, "");
+//        values.put(NOTIFICATION_CONTENT_COLUMN, "");
+//        values.put(NOTIFICATION_TIME_STAMP, currentTime);
+//        values.put(NOTIFICATION_EXP_TIME, expTime);
+//        values.put(NOTIFICATION_TOTAL_TIME, currentTime + expTime);
+//        values.put(IMAGE_URL_COLUMN, "https://cdn.pixabay.com/photo/2018/01/11/19/02/architecture-3076685_960_720.jpg");
+//
+//        long rowId = db.insertWithOnConflict(TABLE_NOTIFICATION, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+//    }
 
 }

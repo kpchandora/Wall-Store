@@ -2,8 +2,11 @@ package developer.code.kpchandora.wallstore;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,10 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import developer.code.kpchandora.wallstore.Database.DbHelper;
@@ -52,7 +59,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.notificationTitle.setText(model.getTitle());
         holder.notificationContent.setText(model.getContent());
 
-        String imageUrl = model.getImageUrl();
+        final String imageUrl = model.getImageUrl();
 
         long currentTime = System.currentTimeMillis();
         long notificationTime = model.getTimeStamp();
@@ -86,22 +93,24 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         if (imageUrl != null && !imageUrl.equals("")) {
 
+
             Picasso.with(context)
                     .load(imageUrl)
                     .fit()
-                    .into(holder.restaurantImage);
+                    .into(holder.notificationImage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            holder.progressBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError() {
+                            holder.progressBar.setVisibility(View.GONE);
+                        }
+                    });
 //            Toast.makeText(context, ""+imageUrl, Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "onBindViewHolder: imgUrl");
         }
 
-
-
-        holder.layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                updateFlag(id, 1);
-            }
-        });
 
         Log.i("Adapter", "onBindViewHolder: ");
     }
@@ -125,21 +134,39 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         return modelArrayList.size();
     }
 
-    public class MyMHolder extends RecyclerView.ViewHolder {
+    public class MyMHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Context ctx;
         TextView notificationTitle, notificationContent;
-        ImageView restaurantImage;
+        ImageView notificationImage;
         TextView timeSpent;
         LinearLayout layout;
+        ProgressBar progressBar;
+        private ArrayList<NotificationModel> arrayList;
 
         public MyMHolder(View itemView, ArrayList<NotificationModel> notificationModels, Context ctx) {
             super(itemView);
             this.ctx = ctx;
-            notificationContent = itemView.findViewById(R.id.restaurant_noti_content);
-            notificationTitle = itemView.findViewById(R.id.restaurant_noti_title);
-            restaurantImage = itemView.findViewById(R.id.noti_image);
+            progressBar = itemView.findViewById(R.id.noti_progressBar);
+            this.arrayList = notificationModels;
+            notificationContent = itemView.findViewById(R.id.noti_content);
+            notificationTitle = itemView.findViewById(R.id.noti_title);
+            notificationImage = itemView.findViewById(R.id.noti_image);
             timeSpent = itemView.findViewById(R.id.time_spent);
             layout = itemView.findViewById(R.id.notification_linearLayout);//#dfd9d9
+            notificationImage.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+
+            NotificationModel model = arrayList.get(position);
+            String url = model.getImageUrl();
+
+            Intent intent = new Intent(context, ImageOpenActivity.class);
+            intent.putExtra("NotiUrl", url);
+            intent.putExtra("TAG", 1);
+            context.startActivity(intent);
         }
     }
 }
