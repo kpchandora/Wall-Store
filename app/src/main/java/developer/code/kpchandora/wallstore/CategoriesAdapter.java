@@ -113,9 +113,11 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
 
     public class MyHolder extends RecyclerView.ViewHolder {
         private Button categoryButton;
+        private View itemView;
 
         public MyHolder(View itemView) {
             super(itemView);
+            this.itemView = itemView;
             categoryButton = itemView.findViewById(R.id.category_button_id);
         }
     }

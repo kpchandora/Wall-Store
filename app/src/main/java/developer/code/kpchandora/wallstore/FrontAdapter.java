@@ -2,14 +2,15 @@ package developer.code.kpchandora.wallstore;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -20,12 +21,15 @@ import java.util.List;
  * Created by kpchandora on 16/1/18.
  */
 
-public class MyImageAdapter extends RecyclerView.Adapter<MyImageAdapter.MyViewHolder> {
+public class FrontAdapter extends RecyclerView.Adapter<FrontAdapter.MyViewHolder> {
+
+    private static final String TAG = "FrontAdapter";
+    private int positionOfCategory;
 
     private List<CategoryModel> imagePOJOList;
     private Context context;
 
-    public MyImageAdapter(Context context, List<CategoryModel> imagePOJOList) {
+    public FrontAdapter(Context context, List<CategoryModel> imagePOJOList) {
 
         this.context = context;
         this.imagePOJOList = imagePOJOList;
@@ -41,11 +45,11 @@ public class MyImageAdapter extends RecyclerView.Adapter<MyImageAdapter.MyViewHo
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
         CategoryModel pojo = imagePOJOList.get(position);
         String url = pojo.getImageUrl();
-        String title = pojo.getImageTitle();
+        final String title = pojo.getImageTitle();
         holder.titleTextView.setText(title);
 
         Picasso.with(context)
@@ -63,6 +67,26 @@ public class MyImageAdapter extends RecyclerView.Adapter<MyImageAdapter.MyViewHo
                     }
                 });
 
+        holder.imageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                positionOfCategory = position;
+                return false;
+            }
+        });
+
+    }
+
+    public int getCategoryPosition() {
+        Log.i(TAG, "getCategoryPosition: " + positionOfCategory);
+        return positionOfCategory;
+    }
+
+    public void removeCategory(int position) {
+        imagePOJOList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, imagePOJOList.size());
+        Log.i(TAG, "removeCategory: " + imagePOJOList.size());
     }
 
     @Override
@@ -77,11 +101,13 @@ public class MyImageAdapter extends RecyclerView.Adapter<MyImageAdapter.MyViewHo
         List<CategoryModel> pojos;
         TextView titleTextView;
         ProgressBar progressBar;
+        View itemView;
 
         public MyViewHolder(View itemView, List<CategoryModel> pojos, Context context) {
             super(itemView);
             this.ctx = context;
             this.pojos = pojos;
+            this.itemView = itemView;
             progressBar = itemView.findViewById(R.id.front_progressBar);
             titleTextView = itemView.findViewById(R.id.text_view);
             imageView = itemView.findViewById(R.id.image_id);
@@ -98,7 +124,6 @@ public class MyImageAdapter extends RecyclerView.Adapter<MyImageAdapter.MyViewHo
 
             Intent i = new Intent(ctx, MainActivity.class);
             i.putExtra("Title", name);
-            Bundle b = new Bundle();
             ctx.startActivity(i);
 
         }

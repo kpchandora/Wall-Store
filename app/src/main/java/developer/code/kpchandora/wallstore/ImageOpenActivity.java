@@ -7,10 +7,12 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.WallpaperManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -37,11 +39,17 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.UUID;
 
+import developer.code.kpchandora.wallstore.Database.CategoryContract;
+import developer.code.kpchandora.wallstore.Database.DbHelper;
 import dmax.dialog.SpotsDialog;
 
-public class ImageOpenActivity extends AppCompatActivity {
+public class ImageOpenActivity extends RootAnimActivity {
+
+    private static final String TAG = "ImageOpenActivity";
 
     private static String url = "";
+    private String imageUri = "";
+    private int tag = 5;
     private int width, height;
 
     private ImageView imageView;
@@ -53,6 +61,7 @@ public class ImageOpenActivity extends AppCompatActivity {
     private Context context;
     private NotificationCompat.Builder builder;
     private NotificationManager manager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +76,7 @@ public class ImageOpenActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
+
             url = bundle.getString("URL");
             title = bundle.getString("Title");
             if (url.contains("dpr=2")) {
@@ -88,7 +98,6 @@ public class ImageOpenActivity extends AppCompatActivity {
         Picasso.with(this)
                 .load(url)
                 .fit()
-
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -138,6 +147,13 @@ public class ImageOpenActivity extends AppCompatActivity {
 
     }
 
+    private void showDialog(){
+
+
+
+    }
+
+
     private void sendNotification(String uri, Bitmap bitmap, int flag) {
 
         String CHANNEL_ID = "notification_channel";
@@ -146,7 +162,7 @@ public class ImageOpenActivity extends AppCompatActivity {
                 .setSound(null);
 
 
-         manager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
@@ -199,11 +215,10 @@ public class ImageOpenActivity extends AppCompatActivity {
     }
 
 
-
     private class DownloadImage extends AsyncTask<Void, Void, Bitmap> {
         String fileName = UUID.randomUUID().toString() + ".jpg";
-        AlertDialog alertDialog;
-        ImageOpenActivity activity;
+//        AlertDialog alertDialog;
+//        ImageOpenActivity activity;
 
 
         @Override
@@ -237,6 +252,7 @@ public class ImageOpenActivity extends AppCompatActivity {
                 String uri = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, fileName, "");
 //                alertDialog.dismiss();
                 sendNotification(uri, bitmap, 1);
+                insertUri(uri);
                 Toast.makeText(context, "Downloaded Successfully", Toast.LENGTH_LONG).show();
             } else {
 //                alertDialog.dismiss();
@@ -244,6 +260,19 @@ public class ImageOpenActivity extends AppCompatActivity {
                 Toast.makeText(context, "Downloading Failed", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    private void insertUri(String uri) {
+
+        DbHelper helper = new DbHelper(ImageOpenActivity.this);
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(CategoryContract.DOWNLOAD_URI, uri);
+
+        long numRows = db.insert(CategoryContract.DOWNLOAD_TABLE, null, values);
+        Log.i(TAG, "insertUri: " + numRows);
+
     }
 
     public void setWallpaper(View view) {

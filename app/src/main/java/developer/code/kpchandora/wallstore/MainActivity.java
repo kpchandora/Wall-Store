@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends RootAnimActivity {
 
     private static final String TAG = "MainActivity";
 

@@ -8,19 +8,16 @@
     tools:context="developer.code.kpchandora.wallstore.FrontActivity">
 
 
-
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            app:titleTextColor="@android:color/white"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-             />
+            app:titleTextColor="@android:color/white" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -28,8 +25,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
 
         <android.support.v7.widget.RecyclerView
@@ -53,17 +49,39 @@
             android:id="@+id/floatingActionButton"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:clickable="true"
-            app:fabSize="normal"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_margin="20dp"
+            android:clickable="true"
             android:src="@drawable/add_button"
             app:backgroundTint="#03A9F4"
-             />
+            app:fabSize="normal" />
+
+        <RelativeLayout
+            android:id="@+id/empty_categoryLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true">
+
+            <ImageView
+                android:id="@+id/safebox"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/safebox" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/safebox"
+                android:layout_marginTop="4dp"
+                android:text="No category!"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
-
 
 </LinearLayout>

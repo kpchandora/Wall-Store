@@ -11,7 +11,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -37,11 +39,17 @@ public class CategoriesActivity extends AppCompatActivity {
     private RequestQueue requestQueue;
     private CategoriesAdapter adapter;
     private ArrayList<String> titleArrayList;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categories);
+        progressBar = findViewById(R.id.category_activity_progressBar);
+
+        setTitle("Categories");
+
+        deleteTable();
 
         Bundle b = getIntent().getBundleExtra("TitleBundle");
         titleArrayList = new ArrayList<>();
@@ -63,6 +71,17 @@ public class CategoriesActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(CategoriesActivity.this);
 
         getDataFromApi();
+    }
+
+    private void deleteTable(){
+        DbHelper helper = new DbHelper(CategoriesActivity.this);
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        String DELETE_TABLE = "DELETE FROM "+CategoryContract.CATEGORY_TABLE+" WHERE "+
+                CategoryContract.CATEGORY_ID+" != \"-1\";";
+        db.execSQL(DELETE_TABLE);
+        Log.i(TAG, "deleteTable: ");
+
     }
 
     private class CategoryFetchData extends AsyncTask<Void, Void, ArrayList<CategoryModel>> {
@@ -132,16 +151,21 @@ public class CategoriesActivity extends AppCompatActivity {
 
                             for (int i = 0; i < array.length(); i++) {
 
-                                JSONObject currentObj = array.getJSONObject(i);
-                                String title = currentObj.getString("title");
-                                String url = currentObj.getString("url");
+                                if(!array.getString(i).equals("null")){
+                                    JSONObject currentObj = array.getJSONObject(i);
+                                    String title = currentObj.getString("title");
+                                    String url = currentObj.getString("url");
 
-                                insertData(title, url);
+                                    insertData(title, url);
+                                }else {
+                                    Log.i(TAG, "onResponse: "+array.getString(i)+" at pos "+i);
+                                }
+
 
                             }
 
                             updateFlagOfTitles(titleArrayList);
-
+                            progressBar.setVisibility(View.GONE);
                             adapter = new CategoriesAdapter(CategoriesActivity.this, fetchCategories());
                             categoryRecyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
