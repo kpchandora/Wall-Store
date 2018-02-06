@@ -124,6 +124,7 @@ public class FrontAdapter extends RecyclerView.Adapter<FrontAdapter.MyViewHolder
 
             Intent i = new Intent(ctx, MainActivity.class);
             i.putExtra("Title", name);
+            i.putExtra("pageCount", FrontActivity.pageCount);
             ctx.startActivity(i);
 
         }

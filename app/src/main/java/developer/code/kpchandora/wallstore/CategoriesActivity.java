@@ -75,7 +75,6 @@ public class CategoriesActivity extends RootAnimActivity {
         categoryRecyclerView.setLayoutManager(new GridLayoutManager(CategoriesActivity.this, 3));
         categoryRecyclerView.setHasFixedSize(true);
 //        categoryRecyclerView.setLayoutManager(layoutManager);
-
         categoryRecyclerView.addItemDecoration(new SpacesItem(8));
         requestQueue = Volley.newRequestQueue(CategoriesActivity.this);
 
@@ -218,6 +217,7 @@ public class CategoriesActivity extends RootAnimActivity {
         long rowId = db.insertWithOnConflict(CategoryContract.CATEGORY_TABLE,
                 null, values, SQLiteDatabase.CONFLICT_REPLACE);
 
+        db.close();
         Log.i("Category", "insertData: " + rowId);
     }
 

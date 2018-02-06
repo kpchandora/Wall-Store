@@ -10,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import developer.code.kpchandora.wallstore.Database.CategoryContract;
 import developer.code.kpchandora.wallstore.Database.DbHelper;
@@ -26,7 +26,13 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
     private ArrayList<CategoryModel> categoryModels;
     private Context context;
     private int[] tempFlag;
+    private ArrayList<Integer> arrayList;
 
+    private int[] flagArray ;
+
+    private int count = 0;
+
+    private HashMap<String , Integer>map;
 
     private static final String TAG = "CategoryAdapter";
 
@@ -34,6 +40,38 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
         this.context = context;
         this.categoryModels = categoryModels;
         tempFlag = new int[categoryModels.size()];
+        arrayList = new ArrayList<>();
+        flagArray = new int[categoryModels.size()];
+
+        map = new HashMap<>();
+
+        for(int i = 0; i < categoryModels.size(); i++){
+            flagArray[i] = i;
+        }
+
+        for(int i = 0; i < categoryModels.size(); i++){
+            map.put(categoryModels.get(i).getImageTitle(), categoryModels.get(i).getFlag());
+        }
+
+        Log.i(TAG, "CategoriesAdapter: ");
+
+        for(int i = 0; i < map.size(); i++){
+            Log.i(TAG, "HashMap: "+map);
+        }
+
+    }
+
+
+    @Override
+    public long getItemId(int position) {
+        Log.i(TAG, "getItemId: ");
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        Log.i(TAG, "getItemViewType: ");
+        return position;
     }
 
     @Override
@@ -41,8 +79,10 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
 
         View view = LayoutInflater.from(context).inflate(R.layout.category_layout, null);
 
+        Log.i("onCreateViewHolder", "onCreateViewHolder: ");
         return new MyHolder(view);
     }
+
 
     @Override
     public void onBindViewHolder(MyHolder holder, final int position) {
@@ -57,11 +97,20 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
 
         button.setText(title);
         tempFlag[position] = flag;
+//        Log.i(TAG, "onBindViewHolder: " + tempFlag[position]);
+
+        Log.i(TAG, "onBindViewHolder: Position "+position);
+
         if (flag == 1) {
+            Log.i(TAG, "Hashkey: "+title);
+            Log.i(TAG, "onBindViewHolder: Pos 1 "+position);
             button.setBackgroundResource(R.drawable.category_button_click_bg);
             button.setTextColor(Color.BLACK);
-            updateFlag(title, url);
+            updateTitleAndUrl(title, url);
         }
+
+//        Log.i(TAG, "onBindViewHolder: Pos " + position);
+//        Log.i(TAG, "onBindViewHolder: Count " + count);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +133,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
 
 
     }
+
 
     private void deleteDataFromFrontTable(String title) {
 
@@ -111,7 +161,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
 
     }
 
-    private void updateFlag(String id, String url) {
+    private void updateTitleAndUrl(String id, String url) {
 
         DbHelper helper = new DbHelper(context);
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -123,7 +173,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
                 new String[]{id});
 
 
-        Log.i(TAG, "updateFlag: " + numRows);
+        Log.i(TAG, "updateTitleAndUrl: " + numRows);
     }
 
     @Override

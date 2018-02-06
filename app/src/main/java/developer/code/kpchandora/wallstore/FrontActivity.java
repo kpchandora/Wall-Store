@@ -40,7 +40,17 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.onesignal.OneSignal;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -53,13 +63,15 @@ public class FrontActivity extends RootAnimActivity implements NavigationView.On
     private static final String TAG = "FrontActivity";
     private static final int PERMISSION_REQUEST_CODE = 3;
 
+    protected static int pageCount = 0;
+
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private RelativeLayout relativeLayout;
     private DrawerLayout drawerLayout;
 
 
-    //    private RequestQueue newRqst;
+    private RequestQueue newRqst;
     private ArrayList<String> titlesList;
     private FloatingActionButton fab;
     private FrontAdapter adapter;
@@ -73,6 +85,7 @@ public class FrontActivity extends RootAnimActivity implements NavigationView.On
         fab = findViewById(R.id.floatingActionButton);
         titlesList = new ArrayList<>();
 
+        pageCount = 1;
 
         //Checks if the user has opened the app for first time
         checkIfFirstTime();
@@ -105,7 +118,6 @@ public class FrontActivity extends RootAnimActivity implements NavigationView.On
                 .unsubscribeWhenNotificationsAreDisabled(true)
                 .init();
 
-//        getCDataFromApi();
 
         if (!checkPermission()) {
             askPermission();
@@ -148,6 +160,8 @@ public class FrontActivity extends RootAnimActivity implements NavigationView.On
         }
 
     }
+
+
 
     @Override
     protected void onDestroy() {
@@ -224,7 +238,7 @@ public class FrontActivity extends RootAnimActivity implements NavigationView.On
         if (titlesList.size() < 1) {
             relativeLayout.setVisibility(View.VISIBLE);
         }
-
+        getCDataFromApi();
     }
 
     @Override
@@ -319,81 +333,40 @@ public class FrontActivity extends RootAnimActivity implements NavigationView.On
     }
 
 
-    //    private void getCDataFromApi() {
-//
-//        newRqst = Volley.newRequestQueue(FrontActivity.this);
-//
-//        String api_url = "https://mynewproject-3dd78.firebaseio.com/.json";
-//
-//        Log.i("DATA", "getDataFromApi: ");
-//        final JsonObjectRequest request = new JsonObjectRequest(
-//                Request.Method.GET, api_url, null, new Response.Listener<JSONObject>() {
-//            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-//            @Override
-//            public void onResponse(JSONObject response) {
-//                try {
-//
-//                    JSONArray array = response.getJSONArray("category");
-//                    Log.i("CURRENT", "Array: " + array);
-//                    int noOfImages = response.getInt("count");
-//
-//                    int num = 0;
-//
-//                    for (int i = 0; i < array.length(); i++) {
-//                        if (!array.getString(i).equals("null")) {
-//                            JSONObject currentObj = array.getJSONObject(i);
-//                            JSONArray jsonArray = currentObj.getJSONArray("name");
-//                            String title = currentObj.getString("title");
-//                            String[] names = new String[jsonArray.length()];
-//
-//                            num++;
-//
-//                            int k = 0;
-//
-//                            for (int j = 0; j < jsonArray.length(); j++) {
-//                                if (!jsonArray.getString(j).equals("null")) {
-//                                    Log.i("LENGTH", "String: " + jsonArray.getString(j));
-//                                    names[j] = jsonArray.getString(j);
-//                                    k++;
-//                                }
-//                            }
-//
-//                            String[] categoryItems = new String[k];
-//                            k = 0;
-//                            for (int n = 0; n < names.length; n++) {
-//                                if (names[n] != null) {
-//                                    categoryItems[k] = names[n];
-//                                    k++;
-//                                }
-//                            }
-//
-//                            Log.i("LENGTH", "Categories: " + categoryItems.length);
-//
-//                            String url = currentObj.getString("url");
-//                            imagePOJOList.add(new ImagePOJO(url, title, categoryItems, noOfImages));
-//                        }
-//                    }
-//                    Log.i("NUMCount", "Count: " + num);
-////                    adapter = new FrontAdapter(FrontActivity.this, imagePOJOList);
-//                    recyclerView.setAdapter(adapter);
-//                    progressBar.setVisibility(View.GONE);
-//
-//                } catch (JSONException e) {
-//                    Log.i("NEW", "error: " + e);
-//                    e.printStackTrace();
-//                }
-//            }
-//        },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//
-//                    }
-//                }
-//        );
-//
-//        newRqst.add(request);
-//    }
+    private void getCDataFromApi() {
+
+        newRqst = Volley.newRequestQueue(FrontActivity.this);
+
+        String api_url = "https://mynewproject-3dd78.firebaseio.com/.json";
+
+        Log.i("DATA", "getDataFromApi: ");
+        final JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET, api_url, null, new Response.Listener<JSONObject>() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+
+                    pageCount = response.getInt("pageCount");
+                    Log.i(TAG, "onResponse: PageCount " + pageCount);
+
+
+                } catch (JSONException e) {
+                    Log.i("NEW", "error: " + e);
+                    e.printStackTrace();
+                }
+            }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+
+        newRqst.add(request);
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

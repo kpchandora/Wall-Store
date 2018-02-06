@@ -43,6 +43,7 @@ public class MainActivity extends RootAnimActivity {
     public static String toolBarTitle = "";
     private int count = 0;
     private int flag;
+    private int pageCount = 1;
 
 
     @Override
@@ -58,14 +59,16 @@ public class MainActivity extends RootAnimActivity {
 
         Bundle bundle = getIntent().getExtras();
 
-        String[] categoryArray = null;
 
         if (bundle != null) {
             toolBarTitle = bundle.getString("Title");
+            pageCount = bundle.getInt("pageCount");
             count = bundle.getInt("NoOfImages");
         }
 
         setTitle(toolBarTitle);
+
+        Log.i(TAG, "onCreate: Pages " + pageCount);
 
         addWallpapers(toolBarTitle);
 
@@ -81,11 +84,12 @@ public class MainActivity extends RootAnimActivity {
 
         flag = 0;
 
-        for (int k = 0; k < 1; k++) {
+        for (int k = 0; k < pageCount; k++) {
 
             String pixaBayApi = "https://pixabay.com/api/?key=6318588-51c982aa8d01fb8ba1030b311&q=" + title + "&order=popular&response_group=high_resolution&per_page=" + count + "&image_type=photo&editors_choice=true&safesearch=true";
 
-            final String url = "https://api.pexels.com/v1/search?query=" + title + "&per_page=40&page=1";
+            final String url = "https://api.pexels.com/v1/search?query=" + title + "&per_page=40&page=" + (k + 1);
+            Log.i(TAG, "addWallpapers: Page " + pageCount);
 
             JsonObjectRequest jsonRequest = new JsonObjectRequest(
                     Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -126,9 +130,12 @@ public class MainActivity extends RootAnimActivity {
                             pojoList.add(pojo);
                         }
 
-                        imageAdapter = new ImageAdapter(MainActivity.this, pojoList);
-                        recyclerView.setAdapter(imageAdapter);
-                        progressBar.setVisibility(View.GONE);
+                        if (flag == pageCount - 1) {
+
+                            imageAdapter = new ImageAdapter(MainActivity.this, pojoList);
+                            recyclerView.setAdapter(imageAdapter);
+                            progressBar.setVisibility(View.GONE);
+                        }
 
                         Log.i(TAG, "Flag" + flag);
                         flag++;
