@@ -87,7 +87,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
     @Override
     public void onBindViewHolder(MyHolder holder, final int position) {
 
-        CategoryModel model = categoryModels.get(position);
+        final CategoryModel model = categoryModels.get(position);
         final String title = model.getImageTitle();
         final int flag = model.getFlag();
 
@@ -119,12 +119,14 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
                     button.setBackgroundResource(R.drawable.category_button_click_bg);
                     button.setTextColor(Color.BLACK);
                     insertDataIntoFrontTable(title, url);
+                    model.setFlag(1);
                     tempFlag[position] = 1;
                     Log.i(TAG, "onClick: 0");
                 } else {
                     button.setBackgroundResource(R.drawable.category_button_bg);
                     button.setTextColor(Color.WHITE);
                     deleteDataFromFrontTable(title);
+                    model.setFlag(0);
                     tempFlag[position] = 0;
                     Log.i(TAG, "onClick: 1");
                 }
